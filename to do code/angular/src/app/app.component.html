@@ -1,0 +1,60 @@
+<div class="app">
+  <h1>Angular Todo (with Benchmark Harness)</h1>
+
+  <form class="add-form" (ngSubmit)="addTask()">
+    <input placeholder="Task name" [(ngModel)]="name" name="name" />
+    <select [(ngModel)]="priority" name="priority">
+      <option *ngFor="let p of priorities">{{ p }}</option>
+    </select>
+    <button type="submit">Add</button>
+  </form>
+
+  <div class="bench-controls">
+    <span>Render:</span>
+    <button (click)="benchRender(100)">100</button>
+    <button (click)="benchRender(500)">500</button>
+    <button (click)="benchRender(1000)">1000</button>
+    <span>Update:</span>
+    <button (click)="benchUpdate(50)">50</button>
+    <span>Delete:</span>
+    <button (click)="benchDelete(50)">50</button>
+    <button (click)="clearResults()">Clear results</button>
+  </div>
+
+  <p>Total tasks: {{ tasks.length }}</p>
+
+  <ul class="task-list">
+    <li
+      *ngFor="let task of visibleTasks; trackBy: trackById"
+      class="task"
+      [ngClass]="'priority-' + task.priority.toLowerCase()"
+    >
+      <ng-container *ngIf="editingId === task.id; else viewMode">
+        <input [(ngModel)]="editName" name="editName" />
+        <select [(ngModel)]="editPriority" name="editPriority">
+          <option *ngFor="let p of priorities">{{ p }}</option>
+        </select>
+        <button (click)="saveEdit(task.id)">Save</button>
+      </ng-container>
+      <ng-template #viewMode>
+        <span>{{ task.name }}</span>
+        <span class="badge">{{ task.priority }}</span>
+        <button (click)="startEdit(task)">Edit</button>
+        <button (click)="removeTask(task.id)">Delete</button>
+      </ng-template>
+    </li>
+    <li *ngIf="tasks.length > 200">...and {{ tasks.length - 200 }} more (truncated for display)</li>
+  </ul>
+
+  <h2>Benchmark Results</h2>
+  <table>
+    <thead>
+      <tr><th>Operation</th><th>n</th><th>Time (ms)</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of results">
+        <td>{{ r.op }}</td><td>{{ r.n }}</td><td>{{ r.ms }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
